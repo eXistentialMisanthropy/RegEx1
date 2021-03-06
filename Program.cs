@@ -1,11 +1,11 @@
-﻿using CsvHelper;
-using RegEx1.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+
+using CsvHelper;
+
+using RegEx1.Models;
 
 namespace RegEx1
 {
@@ -13,14 +13,9 @@ namespace RegEx1
     {
         private static void Main(string[] args)
         {
-            var phoneNumberUtil = PhoneNumbers.PhoneNumberUtil.GetInstance();
-            var regions = phoneNumberUtil.GetSupportedRegions();
+            Console.WriteLine(@"Please Enter Input File Path: ");
+            string path = Console.ReadLine();
 
-            // var path = args[0];
-            // Console.WriteLine(@"Please Enter Input File Path: ");
-            // string path = Console.ReadLine();
-
-            var path = @"C:\Users\Nick\Desktop\Numbers.csv";
             var outputPath = Path.GetDirectoryName(path) + "\\" + Path.GetFileNameWithoutExtension(path) + "_processed" + Path.GetExtension(path);
 
             using (var reader = new StreamReader(path))
@@ -28,7 +23,6 @@ namespace RegEx1
                 using (var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
                     var inputRecords = csvReader.GetRecords<Input>();
-                    // var outputRecords = new List<Output>();
                     var lineNumber = 1;
 
                     using (var writer = new StreamWriter(outputPath))
@@ -37,7 +31,7 @@ namespace RegEx1
                         {
                             foreach (var record in inputRecords)
                             {
-                                var dateRegex = new Regex(@"");
+                                var dateRegex = new Regex(@"\d?\d\/\d?\d\/\d\d\d\d");
                                 var dateMatch = dateRegex.Match(record.Comments);
 
                                 var emailRegex = new Regex(@"\A[a-z0-9!#$%&'*+/=?^_‘{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_‘{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\z");
@@ -51,8 +45,6 @@ namespace RegEx1
 
                                 var output = new Output()
                                 {
-                                    WONo = record.WONo,
-                                    OpenDate = record.OpenDate,
                                     Comments = record.Comments,
                                     DateString = dateMatch.Value,
                                     Email = emailMatch.Value,
@@ -67,6 +59,7 @@ namespace RegEx1
                                 }
                                 else
                                 {
+                                    Console.WriteLine($"{DateTime.Now}: Processed Line {lineNumber}");
                                     csvWriter.WriteRecord(output);
                                     csvWriter.NextRecord();
                                 }
@@ -79,6 +72,8 @@ namespace RegEx1
             }            
 
             Console.WriteLine($"DONE: {outputPath}");
+            Console.WriteLine("Press any key to close");
+            Console.ReadKey();
         }
     }
 }

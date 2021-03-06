@@ -1,11 +1,7 @@
-﻿using System;
-
-namespace RegEx1.Models
+﻿namespace RegEx1.Models
 {
     class Output
     {
-        public string WONo { get; set; }
-        public DateTime OpenDate { get; set; }
         public string Comments { get; set;}
         public string DateString { get; set; }
         public string Email { get; set; }
